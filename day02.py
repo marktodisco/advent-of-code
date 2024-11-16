@@ -1,5 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from functools import reduce
+import operator
 import re
 from typing import Self
 
@@ -33,6 +35,12 @@ class CubeSet:
 class Game:
     id: int
     cube_sets: list[CubeSet]
+    minimum_cube_set: tuple[int, int, int] = field(init=False)
+    power: int = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.minimum_cube_set = self._minimum_cube_set()
+        self.power = reduce(operator.mul, self.minimum_cube_set, 1)
 
     @classmethod
     def from_text(cls, text: str) -> Self:
@@ -49,16 +57,26 @@ class Game:
     def is_possible(self) -> bool:
         return all(cs.is_possible() for cs in self.cube_sets)
 
+    def _minimum_cube_set(self) -> tuple[int, int, int]:
+        red, green, blue = 0, 0, 0
+        for cs in self.cube_sets:
+            red = max(red, cs.red)
+            green = max(green, cs.green)
+            blue = max(blue, cs.blue)
+        return red, green, blue
+
 
 def main() -> None:
     file = "./data/day02/part1.txt"
 
     total_id = 0
+    total_power = 0
     with open(file, "r") as fp:
         for line in fp:
             line = line.strip()
             game = Game.from_text(line)
 
+            total_power += game.power
             if game.is_possible():
                 total_id += game.id
 
@@ -68,22 +86,13 @@ def main() -> None:
             print(f"{game.is_possible() = }")
             for cs in game.cube_sets:
                 print(f"    {cs = }, {cs.is_possible() = }")
+            print(f"{game.minimum_cube_set = }")
+            print(f"{game.power = }")
             print("=" * 80)
             print()
 
     print(f"{total_id = }")
-
-    # lines = fp.read().strip().split("\n")
-
-    # games = [Game.from_text(line) for line in lines]
-    # possible_games = list(filter(lambda game: game.is_possible(), games))
-    # possible_ids = [game.id for game in possible_games]
-    # total_id = sum(possible_ids)
-
-    # print(f"{len(games) = }")
-    # print(f"{len(possible_games) = }")
-    # print(f"{len(possible_ids) = }")
-    # print(f"{total_id = }")
+    print(f"{total_power = }")
 
 
 if __name__ == "__main__":
