@@ -50,19 +50,27 @@ class Game:
 
 
 def main() -> None:
-    file = "./data/day02/part1-testing.txt"
+    file = "./data/day02/part1.txt"
 
+    total_id = 0
     with open(file, "r") as fp:
-        lines = fp.read().strip().split("\n")
+        for line in fp:
+            line = line.strip()
+            game = Game.from_text(line)
 
-    print(lines)
+            if game.is_possible():
+                total_id += game.id
 
-    games = [Game.from_text(line) for line in lines]
-    possible_games = list(filter(lambda game: game.is_possible(), games))
-    ids = [game.id for game in possible_games]
+            print("=" * 80)
+            print(f"{line = }")
+            print(f"{game.id = }")
+            print(f"{game.is_possible() = }")
+            for cs in game.cube_sets:
+                print(f"    {cs = }, {cs.is_possible() = }")
+            print("=" * 80)
+            print()
 
-    ids_total = sum(ids)
-    print(f"{ids_total = }")
+    print(f"{total_id = }")
 
 
 if __name__ == "__main__":
