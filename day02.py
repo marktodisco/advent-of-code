@@ -24,8 +24,8 @@ class CubeSet:
 
     def is_possible(self) -> bool:
         is_red_possible = 0 <= self.red <= MAX_RED
-        is_green_possible = 0 <= self.green <= MAX_RED
-        is_blue_possible = 0 <= self.blue <= MAX_RED
+        is_green_possible = 0 <= self.green <= MAX_GREEN
+        is_blue_possible = 0 <= self.blue <= MAX_BLUE
         return is_red_possible and is_green_possible and is_blue_possible
 
 
@@ -37,10 +37,11 @@ class Game:
     @classmethod
     def from_text(cls, text: str) -> Self:
         # Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+        text = text.lower()
         game_id_text, game_text = text.split(":")
         cube_sets_text = game_text.split(";")
 
-        [game_id] = re.compile(r"Game (\d+)").findall(game_id_text)
+        [game_id] = re.compile(r"game (\d+)").findall(game_id_text)
         cube_sets = [CubeSet.from_text(t) for t in cube_sets_text]
 
         return cls(id=int(game_id), cube_sets=cube_sets)
@@ -71,6 +72,18 @@ def main() -> None:
             print()
 
     print(f"{total_id = }")
+
+    # lines = fp.read().strip().split("\n")
+
+    # games = [Game.from_text(line) for line in lines]
+    # possible_games = list(filter(lambda game: game.is_possible(), games))
+    # possible_ids = [game.id for game in possible_games]
+    # total_id = sum(possible_ids)
+
+    # print(f"{len(games) = }")
+    # print(f"{len(possible_games) = }")
+    # print(f"{len(possible_ids) = }")
+    # print(f"{total_id = }")
 
 
 if __name__ == "__main__":
